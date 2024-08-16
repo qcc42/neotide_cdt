@@ -3,7 +3,7 @@ import pprint as pp
 import pandas as pd
 import datetime as dt
 
-array = []
+date_constraint = dt.date(2006, 6, 7)
 
 with open("data_real.csv") as file:
     df = pd.read_csv(file, dtype = {"patientnumber":str ,"arrivaldate":str ,"releasedate": str,"ward": str,"weight": float})
@@ -24,9 +24,9 @@ for i in range(df.shape[0]):
         df['releasedate'][i] = None
 
 df_new = df.drop_duplicates(subset = ['patientnumber', 'arrivaldate'])
-
+df_fresh = df_new[df_new['arrivaldate'] >= date_constraint]
 engine = sqla.create_engine('sqlite://')
-df_new.to_sql(index = False, name = 'temp_patients', con = engine, dtype = {'weight': sqla.Float,'ward': sqla.String, 'releasedate': sqla.Date, 'arrivaldate': sqla.Date, 'patientnumber':  sqla.String})
+df_fresh.to_sql(index = False, name = 'temp_patients', con = engine, dtype = {'weight': sqla.Float,'ward': sqla.String, 'releasedate': sqla.Date, 'arrivaldate': sqla.Date, 'patientnumber':  sqla.String})
 df.set_index('patientnumber')
 
 
